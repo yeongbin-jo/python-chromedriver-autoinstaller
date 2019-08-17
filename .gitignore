@@ -1,0 +1,14 @@
+.idea/
+__pycache__/
+dist/
+*.egg-info*
+chromedriver_autoinstaller/*/chromedriver*
+*.pyc
+.*
+LICENSE.txt
+MANIFEST.in
+README.txt
+!.gitignore
+!.gitlab-ci.yml
+Pipfile
+Pipfile.lock
