@@ -4,6 +4,7 @@ This will add the executable to your PATH so it will be found.
 """
 
 import os
+import logging
 from . import utils
 
 
@@ -14,6 +15,9 @@ def install():
     :return: The file path of chromedriver
     """
     chromedriver_filepath = utils.download_chromedriver()
+    if not chromedriver_filepath:
+        logging.debug('Can not download chromedriver.')
+        return
     chromedriver_dir = os.path.dirname(chromedriver_filepath)
     if 'PATH' not in os.environ:
         os.environ['PATH'] = chromedriver_dir

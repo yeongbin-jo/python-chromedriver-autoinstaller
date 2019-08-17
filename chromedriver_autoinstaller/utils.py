@@ -12,6 +12,7 @@ import urllib.error
 import zipfile
 import xml.etree.ElementTree as elemTree
 import logging
+import re
 
 from io import BytesIO
 
@@ -104,7 +105,9 @@ def get_chrome_version():
         version = os.popen('/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version').read() \
             .replace('Google Chrome', '').strip()
     elif platform == 'win':
-        version = os.popen('reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version').read()
+        result = os.popen('reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version').read()
+        m = re.match(r'\d+\.\d+\.\d+\.\d+', result)
+        version = m.group(1) if m else None
     else:
         return
     return version
