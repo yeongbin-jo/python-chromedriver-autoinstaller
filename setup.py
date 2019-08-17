@@ -21,7 +21,7 @@ if sys.argv[-1] == 'publish':
 
 setup(
     name="chromedriver-autoinstaller",
-    version="0.0.4",
+    version="0.0.5",
     author="Yeongbin Jo",
     author_email="iam.yeongbin.jo@gmail.com",
     description="Automatically install chromedriver that supports the currently installed version of chrome.",
