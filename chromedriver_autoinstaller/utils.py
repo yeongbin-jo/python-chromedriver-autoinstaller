@@ -106,8 +106,7 @@ def get_chrome_version():
             .replace('Google Chrome', '').strip()
     elif platform == 'win':
         result = os.popen('reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version').read()
-        m = re.match(r'\d+\.\d+\.\d+\.\d+', result)
-        version = m.group(1) if m else None
+        version = result.strip().split()[-1]
     else:
         return
     return version
@@ -192,4 +191,5 @@ def download_chromedriver():
 
 
 if __name__ == '__main__':
-    download_chromedriver()
+    print(get_chrome_version())
+    print(download_chromedriver())
