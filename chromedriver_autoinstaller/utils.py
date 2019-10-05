@@ -6,7 +6,6 @@ Helper functions for filename and URL generation.
 import sys
 import os
 import subprocess
-import re
 import urllib.request
 import urllib.error
 import zipfile
@@ -100,13 +99,14 @@ def get_chrome_version():
     """
     platform, _ = get_platform_architecture()
     if platform == 'linux':
-        version = os.popen('google-chrome --version | grep -iE "[0-9.]{10,20}"').read()
+        process = subprocess.Popen(['google-chrome', '--version'])
+        version = subprocess.check_output(['grep', '-iE', '"[0-9.]{10,20}"'], stdin=process.stdout)
     elif platform == 'mac':
-        version = os.popen('/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version').read() \
-            .replace('Google Chrome', '').strip()
+        process = subprocess.Popen(['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '--version'], stdout=subprocess.PIPE)
+        version = process.communicate()[0].decode('UTF-8').replace('Google Chrome', '').strip()
     elif platform == 'win':
-        result = os.popen('reg query "HKEY_CURRENT_USER\Software\Google\Chrome\BLBeacon" /v version').read()
-        version = result.strip().split()[-1]
+        process = subprocess.Popen(['reg', 'query', 'HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon', '/v', 'version'], stdout=subprocess.PIPE)
+        version = process.communicate()[0].decode('UTF-8').strip().split()[-1]
     else:
         return
     return version
