@@ -19,9 +19,12 @@ if sys.argv[-1] == 'publish':
     sys.exit()
 elif sys.argv[-1] == 'clean':
     import shutil
-    shutil.rmtree('build')
-    shutil.rmtree('dist')
-    shutil.rmtree('chromedriver_autoinstaller.egg-info')
+    if os.path.isdir('build'):
+        shutil.rmtree('build')
+    if os.path.isdir('dist'):
+        shutil.rmtree('dist')
+    if os.path.isdir('chromedriver_autoinstaller.egg-info'):
+        shutil.rmtree('chromedriver_autoinstaller.egg-info')
 
 
 setup(
