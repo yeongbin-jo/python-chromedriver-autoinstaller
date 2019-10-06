@@ -17,11 +17,16 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist bdist_wheel')
     os.system('twine upload dist/*')
     sys.exit()
+elif sys.argv[-1] == 'clean':
+    import shutil
+    shutil.rmtree('build')
+    shutil.rmtree('dist')
+    shutil.rmtree('chromedriver_autoinstaller.egg-info')
 
 
 setup(
     name="chromedriver-autoinstaller",
-    version="0.0.6",
+    version="0.0.7",
     author="Yeongbin Jo",
     author_email="iam.yeongbin.jo@gmail.com",
     description="Automatically install chromedriver that supports the currently installed version of chrome.",

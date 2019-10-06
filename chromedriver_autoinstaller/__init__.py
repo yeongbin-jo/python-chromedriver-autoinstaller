@@ -1,7 +1,4 @@
 # coding: utf-8
-"""
-This will add the executable to your PATH so it will be found.
-"""
 
 import os
 import logging
@@ -25,3 +22,12 @@ def install(cwd=False):
     elif chromedriver_dir not in os.environ['PATH']:
         os.environ['PATH'] = chromedriver_dir + utils.get_variable_separator() + os.environ['PATH']
     return chromedriver_filepath
+
+
+def get_chrome_version():
+    """
+    Get installed version of chrome on client
+
+    :return: The version of chrome
+    """
+    return utils.get_chrome_version()
