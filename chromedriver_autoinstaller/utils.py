@@ -99,7 +99,7 @@ def get_chrome_version():
     """
     platform, _ = get_platform_architecture()
     if platform == 'linux':
-        process = subprocess.Popen(['google-chrome', '--version'])
+        process = subprocess.Popen(['chromium-browser', '--version'])
         version = subprocess.check_output(['grep', '-iE', '"[0-9.]{10,20}"'], stdin=process.stdout)
     elif platform == 'mac':
         process = subprocess.Popen(['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '--version'], stdout=subprocess.PIPE)
