@@ -101,6 +101,7 @@ def get_chrome_version():
     if platform == 'linux':
         with subprocess.Popen(['chromium-browser', '--version'], stdout=subprocess.PIPE) as proc:
             version = proc.stdout.read().decode('utf-8').replace('Chromium', '').strip()
+            version = version.replace('Google Chrome', '').strip()
     elif platform == 'mac':
         process = subprocess.Popen(['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '--version'], stdout=subprocess.PIPE)
         version = process.communicate()[0].decode('UTF-8').replace('Google Chrome', '').strip()
