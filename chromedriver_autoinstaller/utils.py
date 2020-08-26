@@ -185,7 +185,7 @@ def download_chromedriver(cwd=False):
             not check_version(chromedriver_filepath, chromedriver_version):
         logging.debug(f'Downloading chromedriver ({chromedriver_version})...')
         if not os.path.isdir(chromedriver_dir):
-            os.mkdir(chromedriver_dir)
+            os.makedirs(chromedriver_dir)
         url = get_chromedriver_url(version=chromedriver_version)
         try:
             response = urllib.request.urlopen(url)
