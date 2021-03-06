@@ -5,14 +5,14 @@ import logging
 from . import utils
 
 
-def install(cwd=False):
+def install(path:str=None):
     """
     Appends the directory of the chromedriver binary file to PATH.
 
     :param cwd: Flag indicating whether to download to current working directory
     :return: The file path of chromedriver
     """
-    chromedriver_filepath = utils.download_chromedriver(cwd)
+    chromedriver_filepath = utils.download_chromedriver(path)
     if not chromedriver_filepath:
         logging.debug('Can not download chromedriver.')
         return
