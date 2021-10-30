@@ -110,7 +110,15 @@ def get_chrome_version():
             ['reg', 'query', 'HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon', '/v', 'version'],
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL
         )
-        version = process.communicate()[0].decode('UTF-8').strip().split()[-1]
+        output = process.communicate()
+        if output:
+            version = output[0].decode('UTF-8').strip().split()[-1]
+        else:
+            process = subprocess.Popen(
+                ['powershell', '-command', '$(Get-ItemProperty -Path Registry::HKEY_CURRENT_USER\\Software\\Google\\chrome\\BLBeacon).version'],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
+            )
+            version = process.communicate()[0].decode('UTF-8').strip()
     else:
         return
     return version
