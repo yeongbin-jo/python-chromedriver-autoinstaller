@@ -12,6 +12,7 @@ import zipfile
 import xml.etree.ElementTree as elemTree
 import logging
 import re
+import shutil
 
 from io import BytesIO
 
@@ -99,9 +100,9 @@ def get_chrome_version():
     """
     platform, _ = get_platform_architecture()
     if platform == 'linux':
-        with subprocess.Popen(['chromium-browser', '--version'], stdout=subprocess.PIPE) as proc:
-            version = proc.stdout.read().decode('utf-8').replace('Chromium', '').strip()
-            version = version.replace('Google Chrome', '').strip()
+        path = get_linux_executable_path()
+        with subprocess.Popen([path, '--version'], stdout=subprocess.PIPE) as proc:
+            version = proc.stdout.read().decode('utf-8').replace('Chromium', '').replace('Google Chrome', '').strip()
     elif platform == 'mac':
         process = subprocess.Popen(['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '--version'], stdout=subprocess.PIPE)
         version = process.communicate()[0].decode('UTF-8').replace('Google Chrome', '').strip()
@@ -122,6 +123,28 @@ def get_chrome_version():
     else:
         return
     return version
+
+
+def get_linux_executable_path():
+    """
+    Look through a list of candidates for Google Chrome executables that might
+    exist, and return the full path to first one that does. Raise a ValueError
+    if none do.
+
+    :return: the full path to a Chrome executable on the system
+    """
+    for executable in (
+        "google-chrome",
+        "google-chrome-stable",
+        "google-chrome-beta",
+        "google-chrome-dev",
+        "chromium-browser",
+        "chromium",
+    ):
+        path = shutil.which(executable)
+        if path is not None:
+            return path
+    raise ValueError("No chrome executable found on PATH")
 
 
 def get_major_version(version):
