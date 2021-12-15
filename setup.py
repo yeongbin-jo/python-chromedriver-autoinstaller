@@ -14,7 +14,7 @@ with open('README.md') as readme_file:
 
 # 'setup.py publish' shortcut.
 if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist bdist_wheel')
+    os.system('python3 setup.py sdist bdist_wheel')
     os.system('twine upload dist/*')
     sys.exit()
 elif sys.argv[-1] == 'clean':
@@ -29,12 +29,12 @@ elif sys.argv[-1] == 'clean':
 
 setup(
     name="chromedriver-autoinstaller",
-    version="0.2.1",
+    version="0.3.0",
     author="Yeongbin Jo",
     author_email="iam.yeongbin.jo@gmail.com",
     description="Automatically install chromedriver that supports the currently installed version of chrome.",
     license="MIT",
-    keywords="chromedriver chrome selenium splinter",
+    keywords="chromedriver chrome chromium selenium",
     url="https://github.com/yeongbin-jo/python-chromedriver-autoinstaller",
     packages=['chromedriver_autoinstaller'],
     entry_points={
@@ -42,7 +42,7 @@ setup(
     },
     long_description_content_type='text/markdown',
     long_description=long_description,
-    python_requires='>=3',
+    python_requires='>=3.6',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Topic :: Software Development :: Testing',
@@ -50,12 +50,10 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
 )
