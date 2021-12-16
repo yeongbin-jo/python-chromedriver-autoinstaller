@@ -19,6 +19,8 @@ from io import BytesIO
 
 __author__ = 'Yeongbin Jo <iam.yeongbin.jo@gmail.com>'
 
+from typing import Optional, AnyStr
+
 
 def get_chromedriver_filename():
     """
@@ -182,7 +184,7 @@ def print_chromedriver_path():
     print(get_chromedriver_path())
 
 
-def download_chromedriver(path:str=None):
+def download_chromedriver(path: Optional[AnyStr] = None):
     """
     Downloads, unzips and installs chromedriver.
     If a chromedriver binary is found in PATH it will be copied, otherwise downloaded.
