@@ -114,7 +114,7 @@ def get_chrome_version():
             stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL
         )
         output = process.communicate()
-        if output:
+        if output and output[0] and len(output[0]) > 0:
             version = output[0].decode('UTF-8').strip().split()[-1]
         else:
             process = subprocess.Popen(
