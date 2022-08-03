@@ -57,14 +57,18 @@ def get_platform_architecture():
     return platform, architecture
 
 
-def get_chromedriver_url(version):
+def get_chromedriver_url(version, no_ssl=False):
     """
     Generates the download URL for current platform , architecture and the given version.
     Supports Linux, MacOS and Windows.
     :param version: chromedriver version string
+    :param no_ssl: Determines whether or not to use the encryption protocol when downloading the chrome driver.
     :return: Download URL for chromedriver
     """
-    base_url = 'https://chromedriver.storage.googleapis.com/'
+    if no_ssl:
+        base_url = 'http://chromedriver.storage.googleapis.com/'
+    else:
+        base_url = 'https://chromedriver.storage.googleapis.com/'
     platform, architecture = get_platform_architecture()
     return base_url + version + '/chromedriver_' + platform + architecture + '.zip'
 
@@ -157,12 +161,15 @@ def get_major_version(version):
     return version.split('.')[0]
 
 
-def get_matched_chromedriver_version(version):
+def get_matched_chromedriver_version(version, no_ssl=False):
     """
     :param version: the version of chrome
     :return: the version of chromedriver
     """
-    doc = urllib.request.urlopen('https://chromedriver.storage.googleapis.com').read()
+    if no_ssl:
+        doc = urllib.request.urlopen('http://chromedriver.storage.googleapis.com').read()
+    else:
+        doc = urllib.request.urlopen('https://chromedriver.storage.googleapis.com').read()
     root = elemTree.fromstring(doc)
     for k in root.iter('{http://doc.s3.amazonaws.com/2006-03-01}Key'):
         if k.text.find(get_major_version(version) + '.') == 0:
@@ -184,19 +191,20 @@ def print_chromedriver_path():
     print(get_chromedriver_path())
 
 
-def download_chromedriver(path: Optional[AnyStr] = None):
+def download_chromedriver(path: Optional[AnyStr] = None, no_ssl: bool = False):
     """
     Downloads, unzips and installs chromedriver.
     If a chromedriver binary is found in PATH it will be copied, otherwise downloaded.
 
     :param str path: Path of the directory where to save the downloaded chromedriver to.
+    :param bool no_ssl: Determines whether or not to use the encryption protocol when downloading the chrome driver.
     :return: The file path of chromedriver
     """
     chrome_version = get_chrome_version()
     if not chrome_version:
         logging.debug('Chrome is not installed.')
         return
-    chromedriver_version = get_matched_chromedriver_version(chrome_version)
+    chromedriver_version = get_matched_chromedriver_version(chrome_version, no_ssl)
     if not chromedriver_version:
         logging.warning('Can not find chromedriver for currently installed chrome version.')
         return
@@ -221,7 +229,7 @@ def download_chromedriver(path: Optional[AnyStr] = None):
         logging.info(f'Downloading chromedriver ({chromedriver_version})...')
         if not os.path.isdir(chromedriver_dir):
             os.makedirs(chromedriver_dir)
-        url = get_chromedriver_url(version=chromedriver_version)
+        url = get_chromedriver_url(version=chromedriver_version, no_ssl=no_ssl)
         try:
             response = urllib.request.urlopen(url)
             if response.getcode() != 200:
@@ -240,4 +248,4 @@ def download_chromedriver(path: Optional[AnyStr] = None):
 
 if __name__ == '__main__':
     print(get_chrome_version())
-    print(download_chromedriver())
+    print(download_chromedriver(no_ssl=False))
