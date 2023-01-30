@@ -4,6 +4,7 @@ Helper functions for filename and URL generation.
 """
 
 import sys
+import platform as pf
 import os
 import subprocess
 import urllib.request
@@ -42,13 +43,27 @@ def get_variable_separator():
     return ':'
 
 
-def get_platform_architecture():
+def get_platform_architecture(version):
     if sys.platform.startswith('linux') and sys.maxsize > 2 ** 32:
         platform = 'linux'
         architecture = '64'
     elif sys.platform == 'darwin':
         platform = 'mac'
-        architecture = '64'
+        if pf.processor() == 'arm':
+        # At some point, the release naming for Apple arm changed;
+        # Looking in http://chromedriver.storage.googleapis.com/, the changeover happened across these releases:
+        # 106.0.5249.61/chromedriver_mac_arm64.zip
+        # 106.0.5249.21/chromedriver_mac64_m1.zip
+            if version <= '106.0.5249.21':
+                print("CHROME <= 106.0.5249.21, using mac64_m1")
+                architecture = '64_m1'
+            else:
+                print("CHROME > 106.0.5249.21, using mac_arm64")
+                architecture = '_arm64'
+        elif pf.processor() == 'i386':
+            architecture = '64'
+        else:
+            raise RuntimeError('Could not determine Mac processor architecture.')
     elif sys.platform.startswith('win'):
         platform = 'win'
         architecture = '32'
@@ -69,9 +84,8 @@ def get_chromedriver_url(version, no_ssl=False):
         base_url = 'http://chromedriver.storage.googleapis.com/'
     else:
         base_url = 'https://chromedriver.storage.googleapis.com/'
-    platform, architecture = get_platform_architecture()
+    platform, architecture = get_platform_architecture(version)
     return base_url + version + '/chromedriver_' + platform + architecture + '.zip'
-
 
 def find_binary_in_path(filename):
     """
@@ -104,7 +118,7 @@ def get_chrome_version():
     """
     :return: the version of chrome installed on client
     """
-    platform, _ = get_platform_architecture()
+    platform, _ = get_platform_architecture('1')
     if platform == 'linux':
         path = get_linux_executable_path()
         with subprocess.Popen([path, '--version'], stdout=subprocess.PIPE) as proc:
