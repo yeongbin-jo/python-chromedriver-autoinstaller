@@ -1,8 +1,8 @@
 # coding: utf-8
 
-import os
 import logging
-from typing import Optional, AnyStr
+import os
+from typing import AnyStr, Optional
 
 from . import utils
 
@@ -20,13 +20,15 @@ def install(cwd: bool = False, path: Optional[AnyStr] = None, no_ssl: bool = Fal
         path = os.getcwd()
     chromedriver_filepath = utils.download_chromedriver(path, no_ssl)
     if not chromedriver_filepath:
-        logging.debug('Can not download chromedriver.')
+        logging.debug("Can not download chromedriver.")
         return
     chromedriver_dir = os.path.dirname(chromedriver_filepath)
-    if 'PATH' not in os.environ:
-        os.environ['PATH'] = chromedriver_dir
-    elif chromedriver_dir not in os.environ['PATH']:
-        os.environ['PATH'] = chromedriver_dir + utils.get_variable_separator() + os.environ['PATH']
+    if "PATH" not in os.environ:
+        os.environ["PATH"] = chromedriver_dir
+    elif chromedriver_dir not in os.environ["PATH"]:
+        os.environ["PATH"] = (
+            chromedriver_dir + utils.get_variable_separator() + os.environ["PATH"]
+        )
     return chromedriver_filepath
 
 
