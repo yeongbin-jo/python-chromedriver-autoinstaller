@@ -4,7 +4,7 @@ Automatically download and install [chromedriver](https://chromedriver.chromium.
 ## Installation
 
 ```bash
-pip install chromedriver-autoinstaller
+pip install git+https://github.com/willnaoosmith/python-chromedriver-autoinstaller.git@master
 ```
 
 ## Usage
