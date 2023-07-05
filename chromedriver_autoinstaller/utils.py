@@ -14,6 +14,7 @@ import urllib.request
 import xml.etree.ElementTree as elemTree
 import zipfile
 from io import BytesIO
+import platform as pf
 
 __author__ = "Yeongbin Jo <iam.yeongbin.jo@gmail.com>"
 
@@ -40,13 +41,27 @@ def get_variable_separator():
     return ":"
 
 
-def get_platform_architecture():
+def get_platform_architecture(chrome_version=None):
     if sys.platform.startswith("linux") and sys.maxsize > 2**32:
         platform = "linux"
         architecture = "64"
     elif sys.platform == "darwin":
         platform = "mac"
-        architecture = "64"
+        if pf.processor() == "arm":
+        # At some point, the release naming for Apple arm changed;
+        # Looking in http://chromedriver.storage.googleapis.com/, the changeover happened across these releases:
+        # 106.0.5249.61/chromedriver_mac_arm64.zip
+        # 106.0.5249.21/chromedriver_mac64_m1.zip
+            if chrome_version is not None and chrome_version <= "106.0.5249.21":
+                print("CHROME <= 106.0.5249.21, using mac64_m1")
+                architecture = "64_m1"
+            else:
+                print("CHROME > 106.0.5249.21, using mac_arm64")
+                architecture = "_arm64"
+        elif pf.processor() == "i386":
+            architecture = "64"
+        else:
+            raise RuntimeError("Could not determine Mac processor architecture.")
     elif sys.platform.startswith("win"):
         platform = "win"
         architecture = "32"
@@ -69,7 +84,7 @@ def get_chromedriver_url(version, no_ssl=False):
         base_url = "http://chromedriver.storage.googleapis.com/"
     else:
         base_url = "https://chromedriver.storage.googleapis.com/"
-    platform, architecture = get_platform_architecture()
+    platform, architecture = get_platform_architecture(version)
     return base_url + version + "/chromedriver_" + platform + architecture + ".zip"
 
 
@@ -160,6 +175,10 @@ def get_chrome_version():
                 shell=True
             )
             version = process.communicate()[0].decode("UTF-8").strip()
+            
+        dirs = [f.name for f in os.scandir("C:\\Program Files\\Google\\Chrome\\Application") if f.is_dir() and re.match("^[0-9.]+$", f.name)]
+        version = max(dirs)
+        
     else:
         return
     return version
