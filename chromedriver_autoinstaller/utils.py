@@ -122,7 +122,7 @@ def get_chrome_version():
     platform, _ = get_platform_architecture()
     if platform == "linux":
         path = get_linux_executable_path()
-        with subprocess.Popen([path, "--version"], stdout=subprocess.PIPE) as proc:
+        with subprocess.Popen([path, "--version"], stdout=subprocess.PIPE, shell=True) as proc:
             version = (
                 proc.stdout.read()
                 .decode("utf-8")
@@ -137,6 +137,7 @@ def get_chrome_version():
                 "--version",
             ],
             stdout=subprocess.PIPE,
+            shell=True
         )
         version = (
             process.communicate()[0]
@@ -145,8 +146,39 @@ def get_chrome_version():
             .strip()
         )
     elif platform == "win":
+        process = subprocess.Popen(
+            [
+                "reg",
+                "query",
+                "HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon",
+                "/v",
+                "version",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            stdin=subprocess.DEVNULL,
+            shell=True
+        )
+        output = process.communicate()
+        if output and output[0] and len(output[0]) > 0:
+            version = output[0].decode("UTF-8").strip().split()[-1]
+        else:
+            process = subprocess.Popen(
+                [
+                    "powershell",
+                    "-command",
+                    "$(Get-ItemProperty -Path Registry::HKEY_CURRENT_USER\\Software\\Google\\chrome\\BLBeacon).version",
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE,
+                shell=True
+            )
+            version = process.communicate()[0].decode("UTF-8").strip()
+            
         dirs = [f.name for f in os.scandir("C:\\Program Files\\Google\\Chrome\\Application") if f.is_dir() and re.match("^[0-9.]+$", f.name)]
         version = max(dirs)
+        
     else:
         return
     return version
