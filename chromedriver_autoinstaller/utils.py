@@ -145,8 +145,14 @@ def get_chrome_version():
             .strip()
         )
     elif platform == "win":
+        # check both of Program Files and Program Files (x86).
+        # if the version isn't found on both of them, version is an empty string.
         dirs = [f.name for f in os.scandir("C:\\Program Files\\Google\\Chrome\\Application") if f.is_dir() and re.match("^[0-9.]+$", f.name)]
-        version = max(dirs)
+        if dirs:
+            version = max(dir)
+        else:
+            dirs = [f.name for f in os.scandir("C:\\Program Files (x86)\\Google\\Chrome\\Application") if f.is_dir() and re.match("^[0-9.]+$", f.name)]
+            version = max(dirs) if dirs else ''
     else:
         return
     return version
