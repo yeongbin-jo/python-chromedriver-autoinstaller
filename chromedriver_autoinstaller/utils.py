@@ -87,12 +87,12 @@ def get_chromedriver_url(chromedriver_version, no_ssl=False):
     Generates the download URL for current platform , architecture and the given version.
     Supports Linux, MacOS and Windows.
 
-    :param chromedriver_version: chromedriver version string
-    :param no_ssl:               Whether to use the encryption protocol when downloading the chrome driver.
+    :param chromedriver_version: ChromeDriver version string
+    :param no_ssl:               Whether to use the encryption protocol when downloading the chrome driver
     :return:                     String. Download URL for chromedriver
     """
     platform, architecture = get_platform_architecture(chromedriver_version)
-    if chromedriver_version >= "115":  # old ChromeDriver versions use the old urls
+    if chromedriver_version >= "115":  # new CfT ChromeDriver versions have their URLs published
         versions_url = "googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
         versions_url = "http://" + versions_url if no_ssl else "https://" + versions_url
         download_version_list = json.load(urllib.request.urlopen(versions_url))
@@ -100,9 +100,9 @@ def get_chromedriver_url(chromedriver_version, no_ssl=False):
             if good_version["version"] == chromedriver_version:
                 download_urls = good_version["downloads"]["chromedriver"]
                 for url in download_urls:
-                    if url["platform"] == platform+architecture:
+                    if url["platform"] == platform + architecture:
                         return url['url']
-    else:
+    else:  # old ChromeDriver versions use the old urls
         base_url = "chromedriver.storage.googleapis.com/"
         base_url = "http://" + base_url if no_ssl else "https://" + base_url
         return base_url + chromedriver_version + "/chromedriver_" + platform + architecture + ".zip"
