@@ -268,5 +268,4 @@ def download_chromedriver(path: Optional[AnyStr] = None, no_ssl: bool = False):
 
 if __name__ == "__main__":
     print(get_chrome_version())
-    # print(get_download_options_for_chromedriver_version('115.0.5790.102', no_ssl=True))
     print(download_chromedriver(no_ssl=False))
