@@ -212,12 +212,9 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
                            None.   if no matching version of chromedriver was discovered
     """
     # Newer versions of chrome use the CfT publishing system
-    if int(get_major_version(chrome_version)) >= 115:
+    if chrome_version >= "115":
         version_url = "googlechromelabs.github.io/chrome-for-testing/known-good-versions.json"
-        if no_ssl:
-            version_url = "http://" + version_url
-        else:
-            version_url = "https://" + version_url
+        version_url = "http://" + version_url if no_ssl else "https://" + version_url
         good_version_list = json.load(urllib.request.urlopen(version_url))
         for good_version in good_version_list["versions"]:
             if good_version["version"] == chrome_version:
@@ -225,10 +222,7 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
     # check old versions of chrome using the old system
     else:
         version_url = "chromedriver.storage.googleapis.com"
-        if no_ssl:
-            version_url = "http://" + version_url
-        else:
-            version_url = "https://" + version_url
+        version_url = "http://" + version_url if no_ssl else "https://" + version_url
         doc = urllib.request.urlopen(version_url).read()
         root = elemTree.fromstring(doc)
         for k in root.iter("{http://doc.s3.amazonaws.com/2006-03-01}Key"):
