@@ -3,3 +3,4 @@ def test_get_chrome_version():
 
     version = get_chrome_version()
     assert version is None or version.count(".") == 3
+

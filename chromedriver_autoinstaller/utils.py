@@ -5,6 +5,7 @@ Helper functions for filename and URL generation.
 
 import logging
 import os
+import json
 import re
 import shutil
 import subprocess
@@ -48,18 +49,9 @@ def get_platform_architecture(chrome_version=None):
     elif sys.platform == "darwin":
         platform = "mac"
         if pf.processor() == "arm":
-        # At some point, the release naming for Apple arm changed;
-        # Looking in http://chromedriver.storage.googleapis.com/, the changeover happened across these releases:
-        # 106.0.5249.61/chromedriver_mac_arm64.zip
-        # 106.0.5249.21/chromedriver_mac64_m1.zip
-            if chrome_version is not None and chrome_version <= "106.0.5249.21":
-                print("CHROME <= 106.0.5249.21, using mac64_m1")
-                architecture = "64_m1"
-            else:
-                print("CHROME > 106.0.5249.21, using mac_arm64")
-                architecture = "_arm64"
+            architecture = "-arm64"
         elif pf.processor() == "i386":
-            architecture = "64"
+            architecture = "-x64"
         else:
             raise RuntimeError("Could not determine Mac processor architecture.")
     elif sys.platform.startswith("win"):
@@ -72,20 +64,17 @@ def get_platform_architecture(chrome_version=None):
     return platform, architecture
 
 
-def get_chromedriver_url(version, no_ssl=False):
+def get_chromedriver_url(download_options):
     """
-    Generates the download URL for current platform , architecture and the given version.
+    Selects the download URL from available options for current platform , architecture and the given version.
     Supports Linux, MacOS and Windows.
-    :param version: chromedriver version string
-    :param no_ssl: Determines whether or not to use the encryption protocol when downloading the chrome driver.
+    :param download_options: list of objects containing platform, and url keys
     :return: Download URL for chromedriver
     """
-    if no_ssl:
-        base_url = "http://chromedriver.storage.googleapis.com/"
-    else:
-        base_url = "https://chromedriver.storage.googleapis.com/"
-    platform, architecture = get_platform_architecture(version)
-    return base_url + version + "/chromedriver_" + platform + architecture + ".zip"
+    platform, architecture = get_platform_architecture()
+    for download_option in download_options:
+        if f'{platform}{architecture}' in download_option['platform']:
+            return download_option['url']
 
 
 def find_binary_in_path(filename):
@@ -182,23 +171,26 @@ def get_major_version(version):
     return version.split(".")[0]
 
 
-def get_matched_chromedriver_version(version, no_ssl=False):
+def get_chromedriver_version_and_download_options(version, no_ssl=False):
     """
     :param version: the version of chrome
-    :return: the version of chromedriver
+    :return: the major version of chromedriver, download options for version
     """
     if no_ssl:
         doc = urllib.request.urlopen(
-            "http://chromedriver.storage.googleapis.com"
+            "http://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json"
         ).read()
     else:
         doc = urllib.request.urlopen(
-            "https://chromedriver.storage.googleapis.com"
+            "https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json"
         ).read()
-    root = elemTree.fromstring(doc)
-    for k in root.iter("{http://doc.s3.amazonaws.com/2006-03-01}Key"):
-        if k.text.find(get_major_version(version) + ".") == 0:
-            return k.text.split("/")[0]
+    data = json.loads(doc)
+    current_major_version = get_major_version(version)
+    available_milestones = data['milestones']
+    if current_major_version in available_milestones.keys():
+        if 'chromedriver' in available_milestones[current_major_version]['downloads'].keys():
+            return current_major_version, available_milestones[current_major_version]['downloads']['chromedriver']
+        
     return
 
 
@@ -229,14 +221,13 @@ def download_chromedriver(path: Optional[AnyStr] = None, no_ssl: bool = False):
     if not chrome_version:
         logging.debug("Chrome is not installed.")
         return
-    chromedriver_version = get_matched_chromedriver_version(chrome_version, no_ssl)
-    if not chromedriver_version:
+    major_version, download_options = get_chromedriver_version_and_download_options(chrome_version, no_ssl)
+    if not major_version and download_options:
         logging.warning(
             "Can not find chromedriver for currently installed chrome version."
         )
         return
-    major_version = get_major_version(chromedriver_version)
-
+    
     if path:
         if not os.path.isdir(path):
             raise ValueError(f"Invalid path: {path}")
@@ -248,12 +239,12 @@ def download_chromedriver(path: Optional[AnyStr] = None, no_ssl: bool = False):
     chromedriver_filename = get_chromedriver_filename()
     chromedriver_filepath = os.path.join(chromedriver_dir, chromedriver_filename)
     if not os.path.isfile(chromedriver_filepath) or not check_version(
-        chromedriver_filepath, chromedriver_version
+        chromedriver_filepath, major_version
     ):
-        logging.info(f"Downloading chromedriver ({chromedriver_version})...")
+        logging.info(f"Downloading chromedriver ({major_version})...")
         if not os.path.isdir(chromedriver_dir):
             os.makedirs(chromedriver_dir)
-        url = get_chromedriver_url(version=chromedriver_version, no_ssl=no_ssl)
+        url = get_chromedriver_url(download_options)
         try:
             response = urllib.request.urlopen(url)
             if response.getcode() != 200:
@@ -261,8 +252,13 @@ def download_chromedriver(path: Optional[AnyStr] = None, no_ssl: bool = False):
         except urllib.error.URLError:
             raise RuntimeError(f"Failed to download chromedriver archive: {url}")
         archive = BytesIO(response.read())
+
         with zipfile.ZipFile(archive) as zip_file:
-            zip_file.extract(chromedriver_filename, chromedriver_dir)
+            # sub_folder in zip file is the same as the file name
+            sub_folder_in_zip = url.split('/')[-1].split('.')[0]
+            # we want to extract the chromedriver binary from the sub folder
+            with open(chromedriver_filepath, 'wb') as f:
+                f.write(zip_file.read(f'{sub_folder_in_zip}/{chromedriver_filename}'))
     else:
         logging.info("Chromedriver is already installed.")
     if not os.access(chromedriver_filepath, os.X_OK):
@@ -272,4 +268,5 @@ def download_chromedriver(path: Optional[AnyStr] = None, no_ssl: bool = False):
 
 if __name__ == "__main__":
     print(get_chrome_version())
+    # print(get_download_options_for_chromedriver_version('115.0.5790.102', no_ssl=True))
     print(download_chromedriver(no_ssl=False))
