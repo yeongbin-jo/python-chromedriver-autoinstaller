@@ -223,7 +223,7 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
             if 'downloads' in milestone:
                 if 'chromedriver' in milestone['downloads']:
                     download_options = milestone['downloads']['chromedriver']
-                return browser_major_version, download_options
+                    return browser_major_version, download_options
     # check old versions of chrome using the old system
     else:
         version_url = "chromedriver.storage.googleapis.com"
