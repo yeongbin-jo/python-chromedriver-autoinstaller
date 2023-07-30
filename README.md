@@ -1,5 +1,8 @@
 # chromedriver-autoinstaller
-Automatically download and install [chromedriver](https://chromedriver.chromium.org/) that supports the currently installed version of chrome. This installer supports Linux, MacOS and Windows operating systems.
+
+[![PyPI](https://img.shields.io/pypi/v/chromedriver-autoinstaller.svg)](https://pypi.org/project/chromedriver-autoinstaller) [![Supported Python Versions](https://img.shields.io/pypi/pyversions/chromedriver-autoinstaller.svg)](https://pypi.org/project/chromedriver-autoinstaller/)
+
+Automatically download and install [chromedriver](https://chromedriver.chromium.org/) that supports the currently installed version of Chrome. This installer supports Linux, MacOS, and Windows operating systems.
 
 ## Installation
 
@@ -18,7 +21,7 @@ import chromedriver_autoinstaller
 
 chromedriver_autoinstaller.install()  # Check if the current version of chromedriver exists
                                       # and if it doesn't exist, download it automatically,
-                                      # then add chromedriver to path
+                                      # Then add chromedriver to the path
 
 driver = webdriver.Chrome()
 driver.get("http://www.python.org")
