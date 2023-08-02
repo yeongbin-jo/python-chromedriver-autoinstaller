@@ -225,6 +225,13 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
         for good_version in good_version_list["versions"]:
             if good_version["version"] == chrome_version:
                 return chrome_version
+        # if no exact match found: use latest patch for the chrome build as fallback
+        build = '.'.join(chrome_version.split('.')[:-1])
+        builds_url = "googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build.json"
+        builds_url = "http://" + builds_url if no_ssl else "https://" + builds_url
+        build_list = json.load(urllib.request.urlopen(builds_url))
+        entry = build_list["builds"][build]
+        if entry: return entry["version"]
     # check old versions of chrome using the old system
     else:
         version_url = "chromedriver.storage.googleapis.com"
