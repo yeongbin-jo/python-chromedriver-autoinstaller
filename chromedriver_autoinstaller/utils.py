@@ -219,13 +219,17 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
     """
     # Newer versions of chrome use the CfT publishing system
     if chrome_version >= "115":
+        closest_version = None
         version_url = "googlechromelabs.github.io/chrome-for-testing/known-good-versions.json"
         version_url = "http://" + version_url if no_ssl else "https://" + version_url
         good_version_list = json.load(urllib.request.urlopen(version_url))
-        compare_version = chrome_version.rsplit('.', 1)[0]
+        compare_version = chrome_version.rsplit('.', 1)[0] + '.'
         for good_version in good_version_list["versions"]:
-            if good_version["version"].startswith(compare_version):
-                return good_version["version"]
+            if good_version["version"] == chrome_version:
+                return chrome_version
+            if good_version["version"].startswith(compare_version) and not closest_version:
+                closest_version = good_version["version"]
+        return closest_version
     # check old versions of chrome using the old system
     else:
         version_url = "chromedriver.storage.googleapis.com"
