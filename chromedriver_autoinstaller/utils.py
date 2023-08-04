@@ -67,7 +67,7 @@ def get_platform_architecture(chrome_version=None):
             else:
                 architecture = "_arm64"
         elif pf.processor() == "i386":
-            if chrome_version is not None and chrome_version >= "115":
+            if chrome_version is not None and get_major_version(chrome_version) >= "115":
                 print("CHROME >= 115, using mac-x64 as architecture identifier")
                 architecture = "-x64"
             else:
@@ -215,7 +215,7 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
     """
     
     # Newer versions of chrome use the CfT publishing system
-    if chrome_version >= "115":
+    if get_major_version(chrome_version) >= "115":
         browser_major_version = get_major_version(chrome_version)
         version_url = "googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json"
         version_url = f"http://{version_url}" if no_ssl else f"https://{version_url}"
