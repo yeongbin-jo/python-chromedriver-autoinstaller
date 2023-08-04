@@ -16,6 +16,7 @@ import xml.etree.ElementTree as elemTree
 import zipfile
 from io import BytesIO
 import platform as pf
+from packaging import version
 
 __author__ = "Yeongbin Jo <iam.yeongbin.jo@gmail.com>"
 
@@ -55,11 +56,12 @@ def get_platform_architecture(chrome_version=None):
         # Mac architecture naming changed again as of the transition to CfT
         # 115.0.5763.0/mac-arm64/chromedriver-mac-arm64.zip'
         # 115.0.5763.0/mac-x64/chromedriver-mac-x64.zip'
+        
         if pf.processor() == "arm":
-            if chrome_version is not None and chrome_version >= "115":
+            if chrome_version is not None and get_major_version(chrome_version) >= "115":
                 print("CHROME >= 115, using mac-arm64 as architecture identifier")
                 architecture = "-arm64"
-            elif chrome_version is not None and chrome_version <= "106.0.5249.21":
+            elif chrome_version is not None and version.parse(chrome_version) <= version.parse("106.0.5249.21"):
                 print("CHROME <= 106.0.5249.21, using mac64_m1 as architecture identifier")
                 architecture = "64_m1"
             else:
