@@ -92,7 +92,7 @@ def get_chromedriver_url(chromedriver_version, download_options, no_ssl=False):
     :return:                     String. Download URL for chromedriver
     """
     platform, architecture = get_platform_architecture(chromedriver_version)
-    if chromedriver_version >= "115":  # new CfT ChromeDriver versions have their URLs published, so we already have a list of options
+    if get_major_version(chromedriver_version) >= "115":  # new CfT ChromeDriver versions have their URLs published, so we already have a list of options
         for option in download_options:
             if option["platform"] == platform + architecture:
                         return option['url']
@@ -211,6 +211,7 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
     :return:               String. The version of chromedriver that matches the Chrome version
                            None.   if no matching version of chromedriver was discovered
     """
+    chrome_version = '115.0.5790.110'
     # Newer versions of chrome use the CfT publishing system
     if chrome_version >= "115":
         browser_major_version = get_major_version(chrome_version)
@@ -223,7 +224,7 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
             if 'downloads' in milestone:
                 if 'chromedriver' in milestone['downloads']:
                     download_options = milestone['downloads']['chromedriver']
-                    return browser_major_version, download_options
+                    return milestone['version'], download_options
     # check old versions of chrome using the old system
     else:
         version_url = "chromedriver.storage.googleapis.com"
