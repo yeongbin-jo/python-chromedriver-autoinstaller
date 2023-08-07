@@ -38,7 +38,7 @@ setup(
     url="https://github.com/yeongbin-jo/python-chromedriver-autoinstaller",
     packages=["chromedriver_autoinstaller"],
     install_requires=[
-          'packaging',
+          'packaging>=23.1',
       ],
     entry_points={
         "console_scripts": [
