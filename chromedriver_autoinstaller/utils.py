@@ -219,14 +219,17 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
         browser_major_version = get_major_version(chrome_version)
         version_url = "googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json"
         version_url = f"http://{version_url}" if no_ssl else f"https://{version_url}"
-        latest_version_per_milestone_list = json.load(urllib.request.urlopen(version_url))
-        # drill through object to make sure each key exists, to determin in driver download is available
-        if browser_major_version in latest_version_per_milestone_list['milestones']:
-            milestone = latest_version_per_milestone_list['milestones'][browser_major_version]
-            if 'downloads' in milestone:
-                if 'chromedriver' in milestone['downloads']:
-                    download_options = milestone['downloads']['chromedriver']
-                    return milestone['version'], download_options
+        latest_version_per_milestone = json.load(urllib.request.urlopen(version_url))
+        
+        # Determine if driver download is available for milestone
+        milestone = latest_version_per_milestone['milestones'].get(browser_major_version)
+        if milestone:
+            try:
+                download_options = milestone['downloads']['chromedriver']
+                return milestone['version'], download_options
+            except KeyError:
+                return None, None
+                    
     # check old versions of chrome using the old system
     else:
         version_url = "chromedriver.storage.googleapis.com"
@@ -237,7 +240,7 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
             if k.text.find(get_major_version(chrome_version) + ".") == 0:
                 # Old system doesn't provide download options so return None
                 return k.text.split("/")[0], None
-    return
+    return None, None
 
 
 def get_chromedriver_path():
