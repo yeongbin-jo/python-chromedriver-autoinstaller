@@ -271,12 +271,15 @@ def download_chromedriver(path: Optional[AnyStr] = None, no_ssl: bool = False):
         logging.debug("Chrome is not installed.")
         return
     chromedriver_version, download_options = get_matched_chromedriver_version(chrome_version, no_ssl)
-    if not chromedriver_version:
+    
+    major_version = get_major_version(chromedriver_version)
+
+    if not chromedriver_version or (major_version >= "115" and not download_options):
         logging.warning(
             "Can not find chromedriver for currently installed chrome version."
         )
         return
-    major_version = get_major_version(chromedriver_version)
+
 
     if path:
         if not os.path.isdir(path):
@@ -294,6 +297,7 @@ def download_chromedriver(path: Optional[AnyStr] = None, no_ssl: bool = False):
         logging.info(f"Downloading chromedriver ({chromedriver_version})...")
         if not os.path.isdir(chromedriver_dir):
             os.makedirs(chromedriver_dir)
+            
         url = get_chromedriver_url(chromedriver_version=chromedriver_version, download_options=download_options, no_ssl=no_ssl)
         try:
             response = urllib.request.urlopen(url)
