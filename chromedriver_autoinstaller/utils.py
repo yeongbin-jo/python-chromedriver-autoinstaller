@@ -143,13 +143,8 @@ def get_chrome_version():
     if platform == "linux":
         path = get_linux_executable_path()
         with subprocess.Popen([path, "--version"], stdout=subprocess.PIPE) as proc:
-            version = (
-                proc.stdout.read()
-                .decode("utf-8")
-                .replace("Chromium", "")
-                .replace("Google Chrome", "")
-                .strip()
-            )
+            full_version = proc.stdout.read().decode("utf-8")
+            version = re.search('(\d+\.\d+\.\d+\.\d+)', full_version).group()
     elif platform == "mac":
         process = subprocess.Popen(
             [
