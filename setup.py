@@ -28,7 +28,7 @@ elif sys.argv[-1] == "clean":
 
 setup(
     name="chromedriver-autoupdater",
-    version="0.6.4",
+    version="0.6.3",
     author="Shawn Caza",
     author_email="theshawn@gmail.com",
     description="Automatically install chromedriver that supports the currently installed version of chrome.",
