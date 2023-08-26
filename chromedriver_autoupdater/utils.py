@@ -18,7 +18,7 @@ from io import BytesIO
 import platform as pf
 from packaging import version
 
-__author__ = "Yeongbin Jo <iam.yeongbin.jo@gmail.com>"
+__author__ = "Shawn Caza <theshawn@gmail.com>"
 
 from typing import AnyStr, Optional
 

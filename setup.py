@@ -4,7 +4,7 @@ import sys
 
 from setuptools import setup
 
-__author__ = "Yeongbin Jo <iam.yeongbin.jo@gmail.com>"
+__author__ = "Shawn Caza <theshawn@gmail.com>"
 
 
 with open("README.md") as readme_file:
@@ -23,26 +23,26 @@ elif sys.argv[-1] == "clean":
         shutil.rmtree("build")
     if os.path.isdir("dist"):
         shutil.rmtree("dist")
-    if os.path.isdir("chromedriver_autoinstaller.egg-info"):
-        shutil.rmtree("chromedriver_autoinstaller.egg-info")
+    if os.path.isdir("chromedriver_autoupdater.egg-info"):
+        shutil.rmtree("chromedriver_autoupdater.egg-info")
 
 
 setup(
-    name="chromedriver-autoinstaller",
+    name="chromedriver-autoupdater",
     version="0.6.3",
-    author="Yeongbin Jo",
-    author_email="iam.yeongbin.jo@gmail.com",
+    author="Shawn Caza",
+    author_email="theshawn@gmail.com",
     description="Automatically install chromedriver that supports the currently installed version of chrome.",
     license="MIT",
     keywords="chromedriver chrome chromium selenium",
-    url="https://github.com/yeongbin-jo/python-chromedriver-autoinstaller",
-    packages=["chromedriver_autoinstaller"],
+    url="https://github.com/shawnCaza/python-chromedriver-autoinstaller",
+    packages=["chromedriver_autoupdater"],
     install_requires=[
           'packaging>=23.1',
       ],
     entry_points={
         "console_scripts": [
-            "chromedriver-path=chromedriver_autoinstaller.utils:print_chromedriver_path"
+            "chromedriver-path=chromedriver_autoupdater.utils:print_chromedriver_path"
         ],
     },
     long_description_content_type="text/markdown",
