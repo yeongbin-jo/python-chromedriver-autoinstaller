@@ -167,7 +167,13 @@ def get_chrome_version():
     elif platform == "win":
         # check both of Program Files and Program Files (x86).
         # if the version isn't found on both of them, version is an empty string.
-        dirs = [f.name for f in os.scandir("C:\\Program Files\\Google\\Chrome\\Application") if f.is_dir() and re.match("^[0-9.]+$", f.name)]
+        # handling if "C:\\Program Files\\Google\\Chrome\\Application" directory does not exist
+        try:
+            dirs = [f.name for f in os.scandir("C:\\Program Files\\Google\\Chrome\\Application") if
+                    f.is_dir() and re.match("^[0-9.]+$", f.name)]
+        except FileNotFoundError:
+            dirs = None
+        
         if dirs:
             version = max(dirs)
         else:
@@ -225,6 +231,23 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
         for good_version in good_version_list["versions"]:
             if good_version["version"] == chrome_version:
                 return chrome_version
+
+        # finding closest version of same major version if not found in previous step
+        # suppose current chrome version in system is 116.0.5845.111
+        # and available chrome versions are 116.0.5845.90, 116.0.5845.91, ..., 116.0.5845.96
+        # then below logic will pick 116.0.5845.96
+        chrome_sub_version = '.'.join(chrome_version.split('.')[:-1])
+        not_found = True
+        chrome_driver_version = None
+
+        for good_version in good_version_list["versions"]:
+            sub_version = '.'.join(good_version["version"].split('.')[:-1])
+            if sub_version == chrome_sub_version:
+                not_found = False
+                chrome_driver_version = good_version["version"]
+            elif not not_found:
+                return chrome_driver_version
+                
     # check old versions of chrome using the old system
     else:
         version_url = "chromedriver.storage.googleapis.com"
