@@ -226,7 +226,7 @@ def get_matched_chromedriver_version(chrome_version, no_ssl=False):
         for good_version in good_version_list["versions"]:
             if good_version["version"] == chrome_version:
                 return chrome_version
-            elif str(good_version["version"]).split('.',1)[0] == str(chrome_version).rsplit('.',1)[0]:
+            elif str(good_version["version"]).rsplit('.',1)[0] == str(chrome_version).rsplit('.',1)[0]:
                 match_version.append(good_version["version"])
         if len(match_version) > 0:
             return max(match_version, key=lambda x: list(map(int, x.split("."))))
