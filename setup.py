@@ -29,7 +29,7 @@ elif sys.argv[-1] == "clean":
 
 setup(
     name="chromedriver-autoinstaller",
-    version="0.6.2",
+    version="0.6.3",
     author="Yeongbin Jo",
     author_email="iam.yeongbin.jo@gmail.com",
     description="Automatically install chromedriver that supports the currently installed version of chrome.",
@@ -37,6 +37,9 @@ setup(
     keywords="chromedriver chrome chromium selenium",
     url="https://github.com/yeongbin-jo/python-chromedriver-autoinstaller",
     packages=["chromedriver_autoinstaller"],
+    install_requires=[
+          'packaging>=23.1',
+      ],
     entry_points={
         "console_scripts": [
             "chromedriver-path=chromedriver_autoinstaller.utils:print_chromedriver_path"
@@ -57,5 +60,6 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
 )
