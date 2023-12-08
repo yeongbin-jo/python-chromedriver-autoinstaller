@@ -24,3 +24,9 @@ driver = webdriver.Chrome()
 driver.get("http://www.python.org")
 assert "Python" in driver.title
 ```
+
+## Authors & Contributors
+
+- CHIDA <[iam.yeongbin.jo@gmail.com](mailto:iam.yeongbin.jo@gmail.com)>
+- shawnCaza <[theshawn@gmail.com](mailto:theshawn@gmail.com)>
+
