@@ -163,8 +163,8 @@ def get_chrome_version():
     elif platform == "win":
         # check both of Program Files and Program Files (x86).
         # if the version isn't found on both of them, version is an empty string.
-        PROGRAMFILES = "C:\\Program Files\\Google\\Chrome\\Application"
-        PROGRAMFILESX86 = "C:\\Program Files (x86)\\Google\\Chrome\\Application"
+        PROGRAMFILES = f"{os.environ['PROGRAMFILES']}\\Google\\Chrome\\Application"
+        PROGRAMFILESX86 = f"{os.environ['PROGRAMFILES(X86)']}\\Google\\Chrome\\Application"
         
         path = PROGRAMFILES if os.path.exists(PROGRAMFILES) else PROGRAMFILESX86 if os.path.exists(PROGRAMFILESX86) else None
 
