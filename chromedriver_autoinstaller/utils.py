@@ -193,8 +193,60 @@ def get_linux_executable_path():
         path = shutil.which(executable)
         if path is not None:
             return path
-    raise ValueError("No chrome executable found on PATH")
 
+    # 2. Check for Flatpak installation
+    flatpak_path = get_flatpak_chrome_path()
+    if flatpak_path:
+        return flatpak_path
+
+    # 3. Check for Snap installation
+    snap_path = get_snap_chrome_path()
+    if snap_path:
+        return snap_path
+
+    raise ValueError("No chrome executable found")
+
+
+def get_flatpak_chrome_path():
+    """
+Check standard Flatpak bin directories for Chromium or Chrome launchers.
+Returns the full path if found, else None.
+    """
+    flatpak_bin_dirs = [
+        os.path.expanduser("~/.local/share/flatpak/exports/bin"),
+        "/var/lib/flatpak/exports/bin",
+    ]
+
+    flatpak_executables = [
+        "org.chromium.Chromium",
+        "com.google.Chrome",
+    ]
+
+    for bin_dir in flatpak_bin_dirs:
+        for exe in flatpak_executables:
+            path = os.path.join(bin_dir, exe)
+            if os.path.exists(path):
+                return path
+
+    return None
+
+def get_snap_chrome_path():
+    """
+Check for Chrome/Chromium installed via Snap.
+Returns the wrapper executable path if found, else None.
+    """
+    if not shutil.which("snap"):
+        return None
+
+    snap_candidates = (
+        "/snap/bin/google-chrome",
+        "/snap/bin/chromium",
+    )
+    for path in snap_candidates:
+        if os.path.exists(path):
+            return path
+
+    return None
 
 def get_major_version(version):
     """
