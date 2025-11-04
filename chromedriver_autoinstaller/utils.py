@@ -17,6 +17,7 @@ import zipfile
 from io import BytesIO
 import platform as pf
 from packaging import version
+from win32com.client import Dispatch
 
 __author__ = "Yeongbin Jo <iam.yeongbin.jo@gmail.com>"
 
@@ -167,8 +168,15 @@ def get_chrome_version():
         path = PROGRAMFILES if os.path.exists(PROGRAMFILES) else PROGRAMFILESX86 if os.path.exists(PROGRAMFILESX86) else None
 
         dirs = [f.name for f in os.scandir(path) if f.is_dir() and re.match("^[0-9.]+$", f.name)] if path else None
+        
+        version = None
 
-        version = max(dirs) if dirs else None
+        if len(dirs) == 1:
+            version = dirs[0]
+        elif len(dirs) > 1:
+            parser = Dispatch("Scripting.FileSystemObject")
+            version = parser.GetFileVersion(os.path.join(path, "chrome.exe"))
+        
     else:
         return
     return version

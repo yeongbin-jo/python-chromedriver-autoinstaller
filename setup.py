@@ -39,6 +39,7 @@ setup(
     packages=["chromedriver_autoinstaller"],
     install_requires=[
           'packaging>=23.1',
+          "pywin32>=301; platform_system=='Windows'"
       ],
     entry_points={
         "console_scripts": [
